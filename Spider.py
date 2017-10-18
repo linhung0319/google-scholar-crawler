@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 
 class Spider:
 
-    def __init__(self, url, page=2, parser='html.parser'):
+    def __init__(self, url, page=5, parser='html.parser'):
         self.url = url
         self.page = page
         self.parser = parser
@@ -21,14 +21,17 @@ class Spider:
         page_urls.append(self.url)
         page_urls += self.__findPages()
 
-        for page_url in page_urls:
+        results = []
+        for index, page_url in enumerate(page_urls):
             res = requests.get(page_url)
             soup = BeautifulSoup(res.text, self.parser)
 
-            self.__crawlBlock(soup)
+            results.append(self.__crawlBlock(soup, index))
+
+        return results
 
     def __findPages(self):
-#        logger = logging.getLogger(__findPages.__name__)
+        logger = logging.getLogger('__findPages')
 
         res = requests.get(self.url)
         soup = BeautifulSoup(res.text, self.parser)
@@ -36,7 +39,7 @@ class Spider:
 
         page_links = soup.select('div[id="gs_nml"] a')
         if not page_links:
-#            logger.debug('Can not find the pages link in the start URL')
+            logger.debug('Can not find the pages link in the start URL')
             pass
         else:
             counter = 0
@@ -48,35 +51,44 @@ class Spider:
 
         return page_url
 
-    def __crawlBlock(self, soup):
+    def __crawlBlock(self, soup, page_index):
+        logger = logging.getLogger('__crawlBlock')
+
+        counter = 0
+        results = []
         for block in soup.select('div[class="gs_r gs_or gs_scl"]'):
+            counter += 1
+            result = {}
             try:
-                print block.select('h3 a')[0].text #Title
+                b_title = block.select('h3 a')[0].text #Title
+                result['title'] = b_title
             except:
-                print "No Title!!!"
+                logger.debug("No Title in Page %s Block %s", page_index, counter)
                 continue
 
-            print "\n"
-
             try:
-                print block.select('h3 a')[0]['href'] #URL
+                b_url =  block.select('h3 a')[0]['href'] #URL
+                result['url'] = b_url
             except:
-                print "No URL!!"
+                logger.debug("No URL in Page %s Block %s", page_index, counter)
                 continue
 
-            print "\n"
+            try:
+                b_year = block.select('div[class="gs_a"]')[0].text #Year
+                result['year'] = b_year
+            except:
+                logger.debug("No URL in Page %s Block %s", page_index, counter)
+                result['year'] = None
 
             try:
-                print block.select('div[class="gs_a"]')[0].text #Year
+                b_content = block.select('div[class="gs_rs"]')[0].text #Content
+                result['content'] = b_content
             except:
-                print "No Year"
+                logger.debug("No Content in Page %s Block %s", page_index, counter)
+                result['content'] = None
 
-            print "\n"
-
-            try:
-                print block.select('div[class="gs_rs"]')[0].text #Content
-            except:
-                print "No Content!!!!!!!!!!!"
+            ### check keyword in title and content ###
+            results.append(result)
             #Tag
             tag = block.select('div[class="gs_ggsd"] a')
             if tag:
@@ -84,4 +96,6 @@ class Spider:
             else:
                 print "No Tag!!"
                 tag = None
-            break
+#            break #test only the first link in each page
+
+        return results

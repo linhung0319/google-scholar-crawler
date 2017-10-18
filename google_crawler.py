@@ -9,7 +9,10 @@ def main():
     ### Google Scholar Crawler, Class Spider
     myCrawler = Spider(start_url)
 
-    myCrawler.crawl()
+    results = myCrawler.crawl()
+
+    for result in results:
+        print result
 
 if __name__ == '__main__':
     main()
