@@ -7,21 +7,23 @@ logging.basicConfig(level=logging.DEBUG,
 import requests
 from bs4 import BeautifulSoup
 
-from ParseOut import ParseOutYear, ParseOutTitle
+from ParseOut import ParseOutYear, ParseOutTitle, ParseOutContent
 
 class Spider:
 
     def __init__(self, url,
                  p_key=[],
                  n_key=[],
+                 score_level=0,
                  key_score={'p': 1, 'n': -3, 'p_none': 1, 'n_none': -1, 'none': -5},
-                 weighting={'title': 1, 'content': 1},
+                 weighting={'title': 1.5, 'content': 1},
                  page=5,
                  parser='html.parser',
                  googleScholarURL="http://scholar.google.com.tw"):
         self.url = url
         self.p_key = p_key
         self.n_key = n_key
+        self.score_level = score_level
         self.key_score = key_score
         self.weighting = weighting
         self.page = page
@@ -38,7 +40,7 @@ class Spider:
             res = requests.get(page_url)
             soup = BeautifulSoup(res.text, self.parser)
 
-            results += self.__crawlBlock(soup, index)
+            results += self.__crawlPage(soup, index)
 
         return results
 
@@ -63,12 +65,13 @@ class Spider:
 
         return page_url
 
-    def __crawlBlock(self, soup, page_index):
+    def __crawlPage(self, soup, page_index):
         logger = logging.getLogger('__crawlBlock')
 
         counter = 0
         results = []
-        for block in soup.select('div[class="gs_r gs_or gs_scl"]'):
+        blocks = soup.select('div[class="gs_r gs_or gs_scl"]')
+        for block in blocks:
             counter += 1
             result = {}
             try:
@@ -102,11 +105,16 @@ class Spider:
                 logger.debug("No URL in Page %s Block %s", page_index, counter)
                 result['year'] = None
 
-            ### Check keyword in the title and the content ###
-            title, score = ParseOutTitle(result['title'], self.p_key, self.n_key, self.key_score)
-            print "Title!!! : ", title
-            print "Score!!! : ", score
+            ### Check keywords in titles and contents
+            ### Evaluate the score of titles and contents by keywords
+            title, t_score = ParseOutTitle(result['title'], self.p_key, self.n_key, self.key_score)
+            content, c_score = ParseOutContent(result['content'], self.p_key, self.n_key, self.key_score)
+            result['require'], result['score'] = self.__requireThesis(t_score, c_score)
+            ### Append the information ('title', 'year', 'content', 'require') of the block in results
             results.append(result)
+
+            print 'title: ', result['title']
+            print 'require: ', result['require']
             #Tag
 #            tag = block.select('div[class="gs_ggsd"] a')
 #            if tag:
@@ -117,3 +125,10 @@ class Spider:
 #            break #test only the first link in each page
 
         return results
+
+    def __requireThesis(self, t_score, c_score):
+        score = self.weighting['title'] * t_score + self.weighting['content'] * c_score
+        if (score > self.score_level):
+            return (True, score)
+        else:
+            return (False, score)
