@@ -17,21 +17,42 @@ def ParseOutTag(text):
         tag = None
         return tag
 
+def ParseOutURL(text):
+    try:
+        url = text.strip()
+        return url
+    except:
+        url = None
+        return None
+
 def ParseOutYear(text):
+    """
+    Parse out year from the form [, year ]
+    and change year to <int> type.
+
+    If there is no year in the parse out result
+    or the year can not be changed into <int>
+    type, return year = 0
+    """
     pattern = re.compile(r',\s[1-2][0|8|9][0-9]{2}\s')
     year = pattern.findall(text)
 
     if year:
         year = remove_punctuation(year[0])
         year = year.strip()
-        return year
+        try:
+            year = int(year)
+            return year
+        except:
+            year = 0
+            return year
     else:
-        year = None
+        year = 0
         return year
 
 def ParseOutTitle(text, p_key=[], n_key=[], key_score={'p': 1, 'n': -3, 'none': -5}):
     if text:
-        title = remove_punctuation(text)
+        title = remove_punctuation(text).strip()
         score = ThesisScore(title, p_key, n_key, key_score)
         return (title, score)
     else:
