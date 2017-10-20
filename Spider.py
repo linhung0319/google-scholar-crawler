@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import pdfkit
 import time
 
-from ParseOut import ParseOutYear, ParseOutTitle, ParseOutContent, ParseOutTag
+from ParseOut import ParseOutYear, ParseOutTitle, ParseOutContent, ParseOutTag, ParseOutURL
 
 class Spider:
 
@@ -79,7 +79,7 @@ class Spider:
             result = {}
             try:
                 b_title = block.select('h3 a')[0].text #Title
-                result['title'] = b_title
+                result['b_title'] = b_title
             except:
                 ### If there is no title in this block, ignore this block
                 logger.debug("No Title in Page %s Block %s", page_index, counter)
@@ -94,6 +94,7 @@ class Spider:
 
             try:
                 b_url =  block.select('h3 a')[0]['href'] #URL
+                b_url = ParseOutURL(b_url)
                 result['url'] = b_url
             except:
                 ### If there is no URL in this block, ignore this block
@@ -105,12 +106,13 @@ class Spider:
                 b_year = ParseOutYear(b_year)
                 result['year'] = b_year
             except:
-                logger.debug("No URL in Page %s Block %s", page_index, counter)
+                logger.debug("No Year in Page %s Block %s", page_index, counter)
                 result['year'] = None
 
             ### Check keywords in titles and contents
             ### Evaluate the score of titles and contents by keywords
-            title, t_score = ParseOutTitle(result['title'], self.p_key, self.n_key, self.key_score)
+            f_title, t_score = ParseOutTitle(result['b_title'], self.p_key, self.n_key, self.key_score)
+            result['f_title'] = f_title
             content, c_score = ParseOutContent(result['content'], self.p_key, self.n_key, self.key_score)
             result['require'], result['score'] = self.__requireThesis(t_score, c_score)
 
@@ -132,8 +134,16 @@ class Spider:
                     result['tag'] = tag_text
                     result['tag_link'] = tag_link
 
-#            break #test only the first link in each page
-            ### Append the information ('title', 'year', 'content', 'require', 'download') of the block in results
+            ### Set result['download'] to False,
+            ### because the thesis hasn't been downloaded
+            result['download'] = False
+
+            ### test only the first link in each page
+#            break
+
+            ### Append the information
+            ### ('title', 'year', 'content', 'require', 'download')
+            ### of the block in results
             results.append(result)
 
         return results
