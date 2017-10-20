@@ -20,11 +20,15 @@ $ git clone https://github.com/linhung0319/google-scholar-crawler.git
 
 ## How to Use
 
-### 1. 前往[Google Scholar Search](https://scholar.google.com.tw)，輸入你想找的關鍵字，到達Search Page的第一頁，並複製此頁的網址
+### 1. 前往[Google Scholar Search](https://scholar.google.com.tw)
 
-![](https://github.com/linhung0319/google-scholar-crawler/blob/master/page.png）
+輸入你想找的關鍵字，到達Search Page的第一頁，並複製此頁的網址
 
-### 2. 進入google_crawler.py，將複製的網址放入start_url， start_url = '網址'
+![](https://github.com/linhung0319/google-scholar-crawler/blob/master/page.png)
+
+### 2. 進入google_crawler.py
+
+將複製的網址放入start_url， start_url = '網址'
 
 ![](https://github.com/linhung0319/google-scholar-crawler/blob/master/url.png)
 
@@ -63,5 +67,24 @@ $ python csvNdownload.py
 將資料轉為CSV檔，存入CSV資料夾
 
 下載具有Tag (PDF, HTML)的連結轉為PDF檔，分別存入PDF，HTML資料夾
+
+## Google Robot Check
+
+Google Search Page 會進行反爬蟲偵測，如果下載或是觀看網頁的手速太快，他會懷疑你是機器人，並且禁止掉你的IP位址
+
+目前想到的最簡單的方法，是使用VPN，當被認為是機器人，就使用VPN馬上改變自己的IP位址
+
+現在網路上有許多的免費VPN可以下載
+
+若在跑Crawler的時候出現訊息
+
+```
+__findPages - Can not find the pages link in the start URL!!
+__findPages - 1.Google robot check might ban you from crawling!!
+__findPages - 2.You might not crawl the page of google scholar
+
+```
+
+解決方式為使用VPN，轉換IP
 
 ## Google Robot Check
