@@ -86,5 +86,3 @@ __findPages - 2.You might not crawl the page of google scholar
 ```
 
 解決方式為使用VPN，轉換IP
-
-## Google Robot Check
