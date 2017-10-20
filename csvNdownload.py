@@ -23,12 +23,15 @@ def ThesisPDFDownload(df):
         url = row['tag_link']
         print title
         print url
-        res = requests.get(url)
-        if (res.status_code == 200):
-            with open(("./PDF/" + title), 'wb') as f:
-                print "Downloading PDF... "
-                f.write(res.content)
-                df.at[index, 'download'] = True
+        try:
+            res = requests.get(url)
+            if (res.status_code == 200):
+                with open(("./PDF/" + title), 'wb') as f:
+                    print "Downloading PDF... "
+                    f.write(res.content)
+                    df.at[index, 'download'] = True
+        except:
+            print "Can not download the PDF file"
 
 def ThesisHTMLDownload(df):
     ### Download the HTML file which has the HTML tag and output a PDF file
@@ -39,8 +42,11 @@ def ThesisHTMLDownload(df):
         url = row['tag_link']
         print title
         print url
-        pdfkit.from_url(url, ("./HTML/" + title), options=options)
-        df.at[index, 'download'] = True
+        try:
+            pdfkit.from_url(url, ("./HTML/" + title), options=options)
+            df.at[index, 'download'] = True
+        except:
+            print "Can not download the HTML file"
 
 def Thesis(df):
     ### Write all the required thesis [title, year, download] in csv file
