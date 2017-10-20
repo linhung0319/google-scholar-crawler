@@ -16,7 +16,7 @@ def main():
              'photon']
 
     ### Google Scholar Crawler, Class Spider
-    myCrawler = Spider(start_url, p_key, n_key)
+    myCrawler = Spider(start_url, p_key, n_key, page=5)
 
     results = myCrawler.crawl()
 
