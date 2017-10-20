@@ -43,6 +43,7 @@ class Spider:
             soup = BeautifulSoup(res.text, self.parser)
 
             results += self.__crawlPage(soup, index + 1)
+            time.sleep(4)
 
         return results
 
