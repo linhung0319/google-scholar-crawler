@@ -41,7 +41,15 @@ class Spider:
         for index, page_url in enumerate(page_urls):
             res = requests.get(page_url)
             soup = BeautifulSoup(res.text, self.parser)
+            print "You are now in page ", (index + 1), " !!!"
 
+            ### Test if the crawler is blocked by the Google robot check
+            page_links = soup.select('div[id="gs_nml"] a')
+            if not page_links:
+                logger.info('1.Google robot check might ban you from crawling!!')
+                logger.info('2.You might not crawl the page of google scholar')
+
+            ### Try to crawl the page no matter it might be banned by Google robot check
             results += self.__crawlPage(soup, index + 1)
             time.sleep(4)
 
