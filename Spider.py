@@ -33,6 +33,8 @@ class Spider:
         self.__googleScholarURL = googleScholarURL
 
     def crawl(self):
+        logger = logging.getLogger('crawl')
+        
         page_urls = []
         page_urls.append(self.url)
         page_urls += self.__findPages()
