@@ -6,8 +6,10 @@ logging.basicConfig(level=logging.DEBUG,
 
 import requests
 from bs4 import BeautifulSoup
+import pdfkit
+import time
 
-from ParseOut import ParseOutYear, ParseOutTitle, ParseOutContent
+from ParseOut import ParseOutYear, ParseOutTitle, ParseOutContent, ParseOutTag
 
 class Spider:
 
@@ -40,7 +42,7 @@ class Spider:
             res = requests.get(page_url)
             soup = BeautifulSoup(res.text, self.parser)
 
-            results += self.__crawlPage(soup, index)
+            results += self.__crawlPage(soup, index + 1)
 
         return results
 
@@ -53,8 +55,9 @@ class Spider:
 
         page_links = soup.select('div[id="gs_nml"] a')
         if not page_links:
-            logger.debug('Can not find the pages link in the start URL')
-            pass
+            logger.debug('Can not find the pages link in the start URL!!')
+            logger.info('1.Google robot check might ban you from crawling!!')
+            logger.info('2.You might not crawl the page of google scholar')
         else:
             counter = 0
             for page_link in page_links:
@@ -110,19 +113,28 @@ class Spider:
             title, t_score = ParseOutTitle(result['title'], self.p_key, self.n_key, self.key_score)
             content, c_score = ParseOutContent(result['content'], self.p_key, self.n_key, self.key_score)
             result['require'], result['score'] = self.__requireThesis(t_score, c_score)
-            ### Append the information ('title', 'year', 'content', 'require') of the block in results
-            results.append(result)
 
-            print 'title: ', result['title']
-            print 'require: ', result['require']
-            #Tag
-#            tag = block.select('div[class="gs_ggsd"] a')
-#            if tag:
-#                print tag[0].text
-#            else:
-#                print "No Tag!!"
-#                tag = None
+            ### Record the required thesis with tag.
+            ### Set result['tag'], result[tag_link] to None.
+            ### If the thesis is required and its tag is [PDF] or [HTML],
+            ### set result['tag'] to 'PDF' or 'HTML' and also record the
+            ### link in result[tag_link]
+            result['tag'] = None
+            result['tag_link'] = None
+            if result['require']:
+                tag = block.select('div[class="gs_ggsd"] a')
+                if tag:
+                    tag_link = tag[0]['href']
+                    tag_text = tag[0].text
+
+                    tag_text = ParseOutTag(tag_text)
+
+                    result['tag'] = tag_text
+                    result['tag_link'] = tag_link
+
 #            break #test only the first link in each page
+            ### Append the information ('title', 'year', 'content', 'require', 'download') of the block in results
+            results.append(result)
 
         return results
 
@@ -132,3 +144,16 @@ class Spider:
             return (True, score)
         else:
             return (False, score)
+
+#    def __getPDF(self, url, title, year):
+#        res = requests.get(url)
+#        print "in __getPDF"
+#        f_name = year + " - " + title.strip() + '.pdf'
+#        with open(f_name, 'wb') as f:
+#            print "Downloading PDF... " + title
+#            f.write(res.content)
+
+#    def __getHTML2PDF(self, url, title, year):
+#        options = {'page-size': 'A4', 'dpi': 400}
+#        f_name = year + " - " + title.strip() + '.pdf'
+#        pdfkit.from_url(url, f_name, options = options)

@@ -8,6 +8,15 @@ logging.basicConfig(level=logging.DEBUG,
 import re
 import string
 
+def ParseOutTag(text):
+    pattern = re.compile(r'(PDF|HTML)')
+    tag = pattern.findall(text)
+    if tag:
+        return tag[0]
+    else:
+        tag = None
+        return tag
+
 def ParseOutYear(text):
     pattern = re.compile(r',\s[1-2][0|8|9][0-9]{2}\s')
     year = pattern.findall(text)
@@ -89,9 +98,13 @@ def main():
 #    print title
 #    print score
     s7 = u'... bank, insertion gain stage, and WDRC for the new Mandarin-specific auditory compensation\nalgorithm, and noise reduction based on entropy and VAD is used to improve speech quality\nand intelligibility. We reduce the power consumption of these algorithms through algorithm ...\n'
-    content, score = ParseOutContent(s7, p_key, n_key)
-    print content
-    print score
+#    content, score = ParseOutContent(s7, p_key, n_key)
+#    print content
+#    print score
+    s8 = '[PDF] semanticscholar.org'
+    s9 = ''
+    tag = ParseOutTag(s8)
+    print type(tag)
 
 if __name__ == '__main__':
     main()
