@@ -6,7 +6,7 @@
 >
 >２. 將Google Search Page上，含有Tag (如[PDF], [HTML])的連結，以PDF檔案格式下載下來
 
-## To Get Start
+## Get Started
 
 >本程式適用於mac，以Python 2.7.10執行，使用函式庫requests, BeautifulSoup, pdfkit，建議皆以pip安裝
 >
