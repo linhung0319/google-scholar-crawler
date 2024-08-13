@@ -3,7 +3,7 @@
 <div markdown>
   
   🌏
-  [**English**](https://github.com/linhung0319/google-scholar-crawler/README.md) |
+  [**English**](https://github.com/linhung0319/google-scholar-crawler/blob/master/README.md) |
   Chinese |
   
 </div>
