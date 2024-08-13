@@ -4,7 +4,7 @@
   
   🌏
   English |
-  [**Chinese**](https://github.com/linhung0319/google-scholar-crawler/README-ch.md) |
+  [**Chinese**](https://github.com/linhung0319/google-scholar-crawler/blob/master/README-ch.md) |
   
 </div>
 
