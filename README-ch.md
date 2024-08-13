@@ -1,5 +1,13 @@
 # google-scholar-crawler
 
+<div markdown>
+  
+  🌏
+  [**English**](https://github.com/ryul1206/multilingual-markdown/blob/main/README.md) |
+  Chinese |
+  
+</div>
+
 >這是我練習寫的一個爬取[Google Scholar Search Page](https://scholar.google.com.tw)的網路爬蟲程式
 >
 >１. 將Google Search Page上，Paper的標題，年份和網址['title', 'year', 'url']，以CSV檔案格式記錄下來
@@ -86,3 +94,9 @@ __findPages - 2.You might not crawl the page of google scholar
 ```
 
 解決方式為使用VPN，轉換IP
+
+## Contact Information
+如果你有任何任何問題或建議，請由此聯繫我:
+- Email: linhung0319@gmail.com
+- Portfolio: [My Portfolio](https://linhung0319.vercel.app/)
+- Linkedin: [My Linkedin](https://www.linkedin.com/in/hung-lin/)
